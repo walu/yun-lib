@@ -1,4 +1,4 @@
-walu-lib
+yun-lib
 ========
 
-walu-lib, a library for me.
+yun-lib, a library for me, walu.
