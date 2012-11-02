@@ -25,6 +25,13 @@ class Yun_Array {
 	/**
 	 * 根据一个带格式的key，来获取数组中的某个值
 	 * 
+	 * <code>
+	 * <?php
+	 * 	$arr = array(0=>array('name'=>'lilei'), 1=>array('name'=>'hanmeimei'));
+	 * 	echo Yun_Array::getByPath($arr, '0.name'); //输出：lilei
+	 * 	echo Yun_Array::getByPath($arr, '1-name', null, '-');//输出：hanmeimei
+	 * </code>
+	 * 
 	 * @param array $arr
 	 * @param string|number $path_key
 	 * @param mixed $default_value
@@ -43,8 +50,34 @@ class Yun_Array {
 		return false === next($path_key_arr) ? $retval : $default_value;
 	}
 	
-	public static function rekeyByPath() {
-		
+	/**
+	 * 根据二位数组第二维上的某个索引的值重排数组
+	 * 
+	 * 1.如果第二维没有这个索引，则舍弃此条数据。
+	 * 2.新数组的顺序与原数组一致。
+	 * 
+	 * <code>
+	 * <?php
+	 * 	$list = array(array('name'=>'lilei', 'sex'=>'boy'), array('name'=>'hanmeimei', 'sex'=>'girl'));
+	 * 	$list = Yun_Array::rekey($list, 'name');
+	 *  //$list为: array(
+	 *  //	'lilei'=>array('name'=>'lilei', 'sex'=>'boy'), 
+	 *  //	'hanmeimei'=>array('name'=>'hanmeimei', 'sex'=>'girl')
+	 *  //);
+	 * </code>
+	 * 
+	 * @param array $arr
+	 * @param string $key
+	 * @return array
+	 */
+	public static function rekey(array $arr, $key) {
+		$fun_re = array();
+		foreach ($arr as $value) {
+			if (empty($value[$key])) {
+				continue;
+			}
+			$fun_re[$value[$key]] = $value;
+		}
+		return $fun_re;
 	}
-	
 }
