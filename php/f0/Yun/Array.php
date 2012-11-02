@@ -2,7 +2,7 @@
 /**
  * Yun_Array
  * 
- * ÓĞ¹ØÊı×é²Ù×÷µÄÒ»Ğ©¹¤¾ß·½·¨
+ * æœ‰å…³æ•°ç»„æ“ä½œçš„ä¸€äº›å·¥å…·æ–¹æ³•
  * 
  * @author walu<imcnan@gmail.com>
  * 
@@ -11,11 +11,11 @@
 class Yun_Array {
 	
 	/**
-	 * ¸ù¾İkey£¬»ñÈ¡Ä³¸öÊı×éµÚÒ»Î¬µÄÄ³Ò»¸öÖµ
+	 * æ ¹æ®keyï¼Œè·å–æŸä¸ªæ•°ç»„ç¬¬ä¸€ç»´çš„æŸä¸€ä¸ªå€¼
 	 * 
 	 * @param array  $arr
 	 * @param string|number $key
-	 * @param mixed  $default_value Èç¹ûkey²»´æÔÚ£¬Ôò·µ»Ø´ËÄ¬ÈÏÖµ
+	 * @param mixed  $default_value å¦‚æœkeyä¸å­˜åœ¨ï¼Œåˆ™è¿”å›æ­¤é»˜è®¤å€¼
 	 * @return mixed
 	 */
 	public static function get(array $arr, $key, $default_value=null) {
@@ -23,12 +23,12 @@ class Yun_Array {
 	}
 	
 	/**
-	 * ¸ù¾İÒ»¸ö´ø¸ñÊ½µÄkey£¬À´»ñÈ¡Êı×éÖĞµÄÄ³¸öÖµ
+	 * æ ¹æ®ä¸€ä¸ªå¸¦æ ¼å¼çš„keyï¼Œæ¥è·å–æ•°ç»„ä¸­çš„æŸä¸ªå€¼
 	 * 
 	 * @param array $arr
 	 * @param string|number $path_key
 	 * @param mixed $default_value
-	 * @param string $path_separator ±ØĞëÎªstring£¬·ñÔòÇëÓÃYun_Array::get
+	 * @param string $path_separator å¿…é¡»ä¸ºstringï¼Œå¦åˆ™è¯·ç”¨Yun_Array::get
 	 * @return mixed
 	 */
 	public static function getByPath(array $arr, $path_key, $default_value=null, $path_separator='.') {
