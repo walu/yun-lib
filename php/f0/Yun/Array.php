@@ -80,4 +80,30 @@ class Yun_Array {
 		}
 		return $fun_re;
 	}
+	
+	/**
+	 * 从数组中随机取出一到多个值
+	 * 
+	 * 如果$num==1, 则直接返回随机渠道的值
+	 * 如果$num>1, 则返回由随机值组成的数组
+	 * 如果$arr为空，或者$num<1，则返回null
+	 * 
+	 * @param array $arr
+	 * @return mixed
+	 */
+	public static function rand(array $arr, $num=1) {
+	    if (empty($arr) || $num<1) {
+	        return null;
+	    }
+	    
+	    $rand_key = array_rand($arr, $num);
+	    if (1==$rand_key) {
+	        return $arr[$rand_key];
+	    }
+	    $list = array();
+	    foreach ($rand_key as $v) {
+	        $list[] = $arr[$v];
+	    }
+	    return $list;
+	}
 }
