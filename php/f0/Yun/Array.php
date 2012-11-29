@@ -2,10 +2,9 @@
 /**
  * Yun_Array
  * 
- * 有关数组操作的一些工具方法
+ * 有效数组操作的一些工具方法
  * 
  * @author walu<imcnan@gmail.com>
- * 
  */
 
 class Yun_Array {
@@ -79,6 +78,24 @@ class Yun_Array {
 			$fun_re[$value[$key]] = $value;
 		}
 		return $fun_re;
+	}
+	
+	/**
+	 * 针对二维数组，获取其第二维中$key对应的值
+	 * 
+	 * 
+	 * @param array $list
+	 * @param string $key
+	 * @return array
+	 */
+	public function select(array $list, $key) {
+		$re = array();
+		foreach ($list as $row) {
+			if (array_key_exists($key, $row)) {
+				$re[] = $row[$key];
+			}
+		}
+		return $re;
 	}
 	
 	/**
