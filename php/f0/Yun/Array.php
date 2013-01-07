@@ -46,7 +46,7 @@ class Yun_Array {
 				break;
 			}
 		}
-		return false === next($path_key_arr) ? $retval : $default_value;
+		return false === current($path_key_arr) ? $retval : $default_value;
 	}
 	
 	/**
