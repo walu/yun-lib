@@ -1,1 +1,1 @@
-a library for walu when writing in php.
+A library for everywhere.
