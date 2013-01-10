@@ -27,4 +27,27 @@ class Yun_String {
 		return $re;
 	}
 	
+	/**
+	 * 判断一个字符串是否以某个串结尾
+	 * 
+	 * @param string $haystack
+	 * @param string $search
+	 * @return boolean 
+	 */
+	public function endWith($haystack, $search) {
+		$len = strlen($search);
+		return substr($haystack, 0, -$len)===$search;
+	}
+	
+	/**
+	 * 判断一个字符串是否以某个串开始
+	 * 
+	 * @param string $haystack
+	 * @param string $search
+	 * @return boolean
+	 */
+	public function startWith($haystack, $search) {
+		return strpos($haystack, $search) === 0;
+	}
+	
 }
