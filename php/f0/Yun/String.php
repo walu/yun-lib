@@ -26,5 +26,4 @@ class Yun_String {
 		$re = explode($delimiter, $string);
 		return $re;
 	}
-	
 }
