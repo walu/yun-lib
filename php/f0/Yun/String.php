@@ -49,5 +49,4 @@ class Yun_String {
 	public function startWith($haystack, $search) {
 		return strpos($haystack, $search) === 0;
 	}
-	
 }
