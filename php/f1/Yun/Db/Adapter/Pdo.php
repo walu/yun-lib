@@ -29,6 +29,7 @@ abstract class Yun_Db_Adapter_Pdo implements Yun_Db_Adapter_Interface {
     public function __construct(Yun_Db_Conf_Pdo $conf, PDO $pdo) {
         $this->conf = $conf;
         $this->pdo  = $pdo;
+        
         //设置错误处理方式，通过返回值来表达。既不要去log warning，也不要throw exception
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
     }
