@@ -9,14 +9,22 @@
  * 
  * 备注：
  * 1. conf的值不允许是null
+ * 2. 本类不要与文件、网络产生依赖，因为他是f1的基础，需要能够方面的生成、传递。
  * 
  * @author walu<imcnan@gmail.com>
  */
 class Yun_Conf {
 	
-	private static $instance ;
+	private $conf = array();
 	
-	public static 
+	private static $instance = null;
+	
+	public static function getInstance() {
+		if (null === self::$instance) {
+			self::$instance = new Yun_Conf();
+		}
+		return self::$instance;
+	}
 	
 	/**
 	 * 
@@ -24,7 +32,25 @@ class Yun_Conf {
 	 * @return null|mixed
 	 */
 	public function get($key) {
-		
+		return isset($this->conf[$key]) ? $this->conf[$key] : null;
+	}
+	
+	/**
+	 * 
+	 * 设置配置
+	 * 
+	 * $conf = Yun_Conf::getInstance();
+	 * 
+	 * <pre>
+	 * $conf_mysql = new Yun_Db_Mysql_Conf();
+	 * $conf->set('default_mysql', $conf_mysql);
+	 * </pre>
+	 * 
+	 * @param string $key
+	 * @param string $value
+	 */
+	public function set($key, $value) {
+		$this->conf[$key] = $value;
 	}
 	
 	/**
@@ -34,6 +60,6 @@ class Yun_Conf {
 	 * @return bool
 	 */
 	public function hasConf($key) {
-		
+		return isset($this->conf[$key]);
 	}
 }

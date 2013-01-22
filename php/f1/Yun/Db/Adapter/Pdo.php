@@ -8,17 +8,11 @@
  * class Yun_Db_Mysql_Adapter_Pdo     extends Yun_Db_Adapter
  * class Yun_Db_Mysql_Adapter_Mysqli  extends Yun_Db_Adapter
  * 
- * 说明mysql插件支持两种驱动
+ * 以此说明mysql插件支持两种驱动
  * 
  * @author walu<imcnan@gmail.com>
  */
 abstract class Yun_Db_Adapter_Pdo implements Yun_Db_Adapter_Interface {
-	
-    /**
-     * 
-     * @var Yun_Db_Conf_Pdo
-     */
-    protected $conf;
     
     /**
      * 
@@ -26,8 +20,13 @@ abstract class Yun_Db_Adapter_Pdo implements Yun_Db_Adapter_Interface {
      */
     protected $pdo;
     
-    public function __construct(Yun_Db_Conf_Pdo $conf, PDO $pdo) {
-        $this->conf = $conf;
+    /**
+     * 这个方法就别覆盖了～
+     * 也别自己造别的方法了，主要是害怕忘了设置PDO::ATTR_ERRMODE
+     * 
+     * @param PDO $pdo
+     */
+    final public function initPdo(PDO $pdo) {
         $this->pdo  = $pdo;
         
         //设置错误处理方式，通过返回值来表达。既不要去log warning，也不要throw exception
@@ -85,6 +84,7 @@ abstract class Yun_Db_Adapter_Pdo implements Yun_Db_Adapter_Interface {
 	 * @see Yun_Db_Adapter_Interface::errorInfo()
 	 */
 	public function errorInfo() {
-		return $this->pdo->errorInfo();
+		$info = $this->pdo->errorInfo();
+		return implode(' ', $info);
 	}	
 }

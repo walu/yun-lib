@@ -71,6 +71,7 @@ interface Yun_Db_Adapter_Interface {
 	/**
 	 * 返回最近一次的错误信息
 	 * 
+	 * 注意！有的驱动返回的不是array，需要转。
 	 * @return string
 	 */
 	public function errorInfo();
