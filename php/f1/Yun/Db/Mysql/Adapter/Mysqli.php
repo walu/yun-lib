@@ -7,17 +7,26 @@
 class Yun_Db_Mysql_Adapter_Mysqli implements Yun_Db_Mysql_Adapter_Interface {
     
     /**
+     * mysqli句柄
+     * 
      * @var mysqli
      */
     private $mysqli;
     
-    private $is_connect;
-    
+    /**
+     * 错误码
+     * 
+     * @var int|string
+     */
     private $error_code;
-    private $error_info;
     
     /**
-     * 
+     * 错误信息
+     * @var string
+     */
+    private $error_info;
+    
+    /** 
      * @see Yun_Db_Mysql_Adapter_Interface::connect()
      */
     public function connect($host, $user, $pass, $dbname, $port, $socket='') {
@@ -98,5 +107,15 @@ class Yun_Db_Mysql_Adapter_Mysqli implements Yun_Db_Mysql_Adapter_Interface {
      */
     public function errorInfo() {
         return $this->errorInfo();
+    }
+    
+    /**
+     * @see Yun_Db_Mysql_Adapter_Interface::errorInConnect()
+     */
+    public function errorInConnect() {
+    	return array(
+    		'error_code' => $this->error_code,
+    		'error_info' => $this->error_info,
+    	);
     }
 }

@@ -180,7 +180,7 @@ class Yun_Db_Mysql_Builder implements Yun_Db_Builder_Interface {
      */
     protected function filterValueToSql($value) {
         if (is_int($value) || is_float($value)) {
-            return (float)$value;
+            return $value;
         } else {
             $value = $this->adapter->quote($value);
             return "'{$value}'";

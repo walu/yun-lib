@@ -9,13 +9,6 @@
 interface Yun_Db_Adapter_Interface {
     
     /**
-     * 是否已连接或打开数据库
-     * 
-     * @return bool
-     */
-    public function isConnect();
-    
-    /**
      * 执行一条SQL
      * 
      * SELECT类语句：成功返回array, 数据库错误返回false
