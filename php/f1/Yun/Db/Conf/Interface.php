@@ -20,4 +20,8 @@ interface Yun_Db_Conf_Interface {
      * @return Yun_Db_Builder_Interface
      */
     public function getBuilder();
+    
+    public function errorCode();
+    
+    public function errorInfo();
 }

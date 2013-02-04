@@ -43,9 +43,12 @@ class Yun_Db_Mysql_Conf implements Yun_Db_Conf_Interface {
 	private $master_server = array();
 	private $slave_server  = array();
 
-	private $retry_time_connect = 0;
+	private $retry_time_connect = 3;
 
 	private $default_names = 'utf8';
+	
+	private $error_code;
+	private $error_info;
 
 	/**
 	 * 删除所有的数据库配置
@@ -67,7 +70,7 @@ class Yun_Db_Mysql_Conf implements Yun_Db_Conf_Interface {
 	 * @param string $port
 	 * @param string $socket
 	 */
-	public function addServer($host, $user, $pass, $dbname, $port, $socket='') {
+	public function addServer($host, $user, $pass, $dbname, $port=3306, $socket='') {
 		$row = array('host'=>$host, 'user'=>$user, 'pass'=>$pass, 'dbname'=>$dbname, 'port'=>$port, 'socket'=>$socket);
 		$this->master_server[] = $row;
 		$this->slave_server[]  = $row;
@@ -160,10 +163,14 @@ class Yun_Db_Mysql_Conf implements Yun_Db_Conf_Interface {
 					break;
 				}
 
-				if ($retry_time==0) {
-					break;
+				if ($retry_time<=0) {
+					$error = $this->adapter_instance[$hash]->errorInConnect();
+					$this->error_code = $error['error_code'];
+					$this->error_info  = $error['error_info'];
+					return false;
 				}
 			}//end while
+			
 		}//endif
 
 		return $this->adapter_instance[$hash];
@@ -174,5 +181,13 @@ class Yun_Db_Mysql_Conf implements Yun_Db_Conf_Interface {
 	 */
 	public function getBuilder() {
 		return Yun_Db_Mysql_Builder::getInstance($this);
+	}
+	
+	public function errorCode() {
+		return $this->error_code;
+	}
+	
+	public function errorInfo() {
+		return $this->error_info;
 	}
 }

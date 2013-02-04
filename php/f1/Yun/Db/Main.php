@@ -77,6 +77,10 @@ class Yun_Db_Main {
 	 */
 	protected $main_table;
 	
+	protected $error_code = 0;
+	
+	protected $error_info = '';
+	
 	/**
 	 * 设置配置文件
 	 * 默认将使用Yun_Conf::getInstance()->get('yun_db_conf');
@@ -84,7 +88,7 @@ class Yun_Db_Main {
 	 * @param Yun_Db_Conf_Interface $conf
 	 */
 	public function setMainConf(Yun_Db_Conf_Interface $conf) {
-	    $this->conf = $conf;
+	    $this->main_conf = $conf;
 	}
 	
 	/**
@@ -105,7 +109,15 @@ class Yun_Db_Main {
 	public function query($sql) {
 	    $sql_prefix = substr($sql, 0, 6);
 		$adapter = $this->getAdapter($sql_prefix);
-		return $adapter->query($sql);
+		if (false === $adapter) {
+			return false;
+		}
+		$re = $adapter->query($sql);
+		if (false === $re) {
+			$this->error_code = $adapter->errorCode();
+			$this->error_info = $adapter->errorInfo();
+		}
+		return $re;
 	}
 	
 	/**
@@ -174,13 +186,15 @@ class Yun_Db_Main {
 	public function insert(array $row) {
 		$builder = $this->getMainBuilder();
 		$sql     = $builder->sqlOfInsert($this->getMainTable(), $row);
+		$adapter = $this->getAdapter();
+		if (false === $adapter) {
+			return false;
+		}
 		
 		$re = $this->query($sql);
 		if (false === $re) {
 			return false;
 		}
-		
-		$adapter = $this->getAdapter();
 		return $adapter->lastInsertId();
 	}
 	
@@ -245,6 +259,14 @@ class Yun_Db_Main {
 	    return $this->main_conf->getBuilder();
 	}
 	
+	public function errorCode() {
+		return $this->error_code;
+	}
+	
+	public function errorInfo() {
+		return $this->error_info;
+	}
+	
 	/**
 	 * 获取本类对应的adapter
 	 * 
@@ -252,7 +274,12 @@ class Yun_Db_Main {
 	 */
 	protected function getAdapter($sql_prefix = '') {
 	    $this->initConf();
-	    return $this->main_conf->getAdapter($sql_prefix);
+	    $adapter = $this->main_conf->getAdapter($sql_prefix);
+	    if (false === $adapter) {
+	    	$this->error_code = $this->main_conf->errorCode();
+	    	$this->error_info = $this->main_conf->errorInfo();
+	    }
+	    return $adapter;
 	}
 	
 	/**
@@ -261,7 +288,7 @@ class Yun_Db_Main {
 	 */
 	protected function initConf() {
 	    if (null === $this->main_conf) {
-	        $conf = Yun_Conf::get(self::CONF_KEY);
+	        $conf = Yun_Conf::getInstance()->get(self::CONF_KEY);
 	        if (!($conf instanceof Yun_Db_Conf_Interface)) {
 	            $errormsg = 'Yun_Conf::get("yun_db_conf")\'s value must be implement Yun_Db_Conf_Interface.';
 	            trigger_error($error_msg, E_USER_ERROR);

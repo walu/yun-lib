@@ -75,5 +75,4 @@ interface Yun_Db_Adapter_Interface {
 	 * @return string
 	 */
 	public function errorInfo();
-	
 }

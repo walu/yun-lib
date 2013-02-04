@@ -19,6 +19,12 @@ class Yun_Conf {
 	
 	private static $instance = null;
 	
+	/**
+	 * 
+	 * 获取单例
+	 * 
+	 * @return Yun_Conf
+	 */
 	public static function getInstance() {
 		if (null === self::$instance) {
 			self::$instance = new Yun_Conf();
@@ -27,6 +33,8 @@ class Yun_Conf {
 	}
 	
 	/**
+	 * 
+	 * 获取某一条Conf
 	 * 
 	 * @param string $key
 	 * @return null|mixed

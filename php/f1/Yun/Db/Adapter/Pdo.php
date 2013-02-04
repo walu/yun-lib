@@ -37,9 +37,10 @@ abstract class Yun_Db_Adapter_Pdo implements Yun_Db_Adapter_Interface {
      * @see Yun_Db_Adapter_Interface::query()
      */
 	public function query($sql) {
+				
 	    $sql = trim($sql);
 	    //" DELETE UPDATE INSERT SELECT "
-	    $act = strtoupper(substr(0, 6, $sql));
+	    $act = strtoupper(substr($sql, 0, 6));
 	    if ("DELETE"==$act || "UPDATE"==$act || "INSERT"==$act) {
 	        $re = $this->pdo->exec($sql);
 	        $re = false !== $re;
@@ -70,8 +71,25 @@ abstract class Yun_Db_Adapter_Pdo implements Yun_Db_Adapter_Interface {
 	 * @see Yun_Db_Adapter_Interface::quote()
 	 */
 	public function quote($string) {
-	    return $this->quote($string);
+		$string = $this->pdo->quote($string);
+		$string = substr($string, 1, strlen($string)-2);
+		return $string;
 	}
+	
+	/**
+	 * @see Yun_Db_Adapter_Interface::isConnect()
+	 */
+	public function isConnect() {
+		return true;
+	}
+	
+	/**
+	 * @see Yun_Db_Adapter_Interface::lastInsertId()
+	 */
+	public function lastInsertId() {
+		return $this->pdo->lastInsertId();
+	}
+	
 	
 	/**
 	 * @see Yun_Db_Adapter_Interface::errorCode()
@@ -86,5 +104,5 @@ abstract class Yun_Db_Adapter_Pdo implements Yun_Db_Adapter_Interface {
 	public function errorInfo() {
 		$info = $this->pdo->errorInfo();
 		return implode(' ', $info);
-	}	
+	}
 }

@@ -143,7 +143,7 @@ class Yun_Db_Mysql_Builder implements Yun_Db_Builder_Interface {
             $k = $this->adapter->quote($k);
             $sql .= "`{$k}`,";
         }
-        return '('.ltrim($sql, ',') . ')';
+        return rtrim($sql, ',');
     }
     
     /**

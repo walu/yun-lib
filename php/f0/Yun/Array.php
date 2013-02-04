@@ -114,7 +114,7 @@ class Yun_Array {
 	    }
 	    
 	    $rand_key = array_rand($arr, $num);
-	    if (1==$rand_key) {
+	    if (1==$num) {
 	        return $arr[$rand_key];
 	    }
 	    $list = array();
