@@ -43,8 +43,6 @@ class Yun_Db_Mysql_Builder implements Yun_Db_Builder_Interface {
      * @see Yun_Db_Builder_Interface::sqlOfSelect()
      */
     public function sqlOfSelect($table, $field, $value) {
-       $table = $this->adapter->quote($table);
-       $field = $this->adapter->quote($field);
        $value = $this->filterValueToSql($value);
        return "SELECT * FROM `{$table}` WHERE `{$field}`={$value}";
     }
@@ -53,7 +51,6 @@ class Yun_Db_Mysql_Builder implements Yun_Db_Builder_Interface {
      * @see Yun_Db_Builder_Interface::sqlOfSelectAll()
      */
     public function sqlOfSelectAll($table) {
-       $table = $this->adapter->quote($table);
        return "SELECT * FROM `{$table}`"; 
     }
     
@@ -61,8 +58,6 @@ class Yun_Db_Mysql_Builder implements Yun_Db_Builder_Interface {
      * @see Yun_Db_Builder_Interface::sqlOfSelectByMuiltyValue()
      */
     public function sqlOfSelectByMuiltyValue($table, $field, array $value) {
-        $table = $this->adapter->quote($table);
-        $field = $this->adapter->quote($field);
         $value = array_map( array($this, 'filterValueToSql'), $value);
         $value = implode(',', $value);
         return "SELECT * FROM `{$table}` WHERE `{$field}` IN ({$value})";
@@ -72,14 +67,11 @@ class Yun_Db_Mysql_Builder implements Yun_Db_Builder_Interface {
      * @see Yun_Db_Builder_Interface::sqlOfSelectOneRow()
      */
     public function sqlOfSelectOneRow($table, $field, $value, array $order_by=array()) {
-        $table = $this->adapter->quote($table);
-        $field = $this->adapter->quote($field);
         $value = $this->filterValueToSql($value);
         
         $sql_order = '';
         if (count($order_by)>0) {
             foreach ($order_by as $k=>$v) {
-                $k = $this->adapter->quote($k);
                 $v = strtoupper($v) == 'ASC' ? 'ASC' : 'DESC';
                 $sql_order .= "`{$k}` {$v},";
             }
@@ -92,7 +84,6 @@ class Yun_Db_Mysql_Builder implements Yun_Db_Builder_Interface {
      * @see Yun_Db_Builder_Interface::sqlOfInsert()
      */
     public function sqlOfInsert($table, array $row) {
-        $table = $this->adapter->quote($table);
         $sql_field = $this->arrayToInsertField($row);
         $sql_value = $this->arrayToInsertValue($row);
         return "INSERT INTO `{$table}`({$sql_field}) VALUES{$sql_value}";
@@ -115,8 +106,6 @@ class Yun_Db_Mysql_Builder implements Yun_Db_Builder_Interface {
      * @see Yun_Db_Builder_Interface::sqlOfDelete()
      */
     public function sqlOfDelete($table, $field, $value) {
-        $table = $this->adapter->quote($table);
-        $field = $this->adapter->quote($field);
         $value = $this->filterValueToSql($value);
         return "DELETE FROM `{$table}` WHERE `{$field}`={$value}";
     }
@@ -125,8 +114,6 @@ class Yun_Db_Mysql_Builder implements Yun_Db_Builder_Interface {
      * @see Yun_Db_Builder_Interface::sqlOfUpdate()
      */
     public function sqlOfUpdate($table, array $row, $field, $value) {
-        $table = $this->adapter->quote($table);
-        $field = $this->adapter->quote($field);
         $value = $this->filterValueToSql($value);
         $sql_row = $this->arrayToUpdate($row);
         return "UPDATE `{$table}` SET {$sql_row} WHERE `{$field}`={$value}";
@@ -140,7 +127,6 @@ class Yun_Db_Mysql_Builder implements Yun_Db_Builder_Interface {
     protected function arrayToInsertField(array $row) {
         $sql = '';
         foreach ($row as $k=>$v) {
-            $k = $this->adapter->quote($k);
             $sql .= "`{$k}`,";
         }
         return rtrim($sql, ',');
@@ -163,7 +149,6 @@ class Yun_Db_Mysql_Builder implements Yun_Db_Builder_Interface {
      */
     protected function arrayToUpdate(array $row) {
         foreach ($row as $k=>$v) {
-            $k = $this->adapter->quote($k);
             $v = $this->filterValueToSql($v);
             $row[$k] = "`{$k}`={$v}";
         }
@@ -179,11 +164,6 @@ class Yun_Db_Mysql_Builder implements Yun_Db_Builder_Interface {
      * @return number|string
      */
     protected function filterValueToSql($value) {
-        if (is_int($value) || is_float($value)) {
-            return $value;
-        } else {
-            $value = $this->adapter->quote($value);
-            return "'{$value}'";
-        }
+        return is_string($value) ? "'{$value}'" : floatval($value);
     }
 }

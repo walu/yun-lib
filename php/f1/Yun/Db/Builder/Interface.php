@@ -8,6 +8,12 @@
  * 1.区分string与int、float，也就是在传递前先强制转换类型，有助于builder的转义与拼接。
  * 对string一般使用quote，对int与float一般就使用floatval()
  * 
+ * 二、各个Sql拼装方法不允许有过于复杂的逻辑，全部能够成功返回String。 
+ *  1. quote不在Builder里做，防止失败。比如mysql_real_escape_string依赖于连接
+ *  2. 传递给各个参数的方法我们认为都是已经转义好的！
+ *
+ * 我们通过第二个约定来简化整个Yun_Db的结构
+ *
  * @author walu<imcnan@gmail.com>
  */
 interface Yun_Db_Builder_Interface {

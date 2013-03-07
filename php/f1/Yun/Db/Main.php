@@ -119,6 +119,37 @@ class Yun_Db_Main {
 		}
 		return $re;
 	}
+
+    /**
+     * 以事务的方式执行多条Sql语句
+     *
+     * @param array $sql_array
+     * @return bool
+     */
+    public function queryTranction(array $sql_array) {
+        $adapter = $this->getAdapter();
+        if (false === $adapter) {
+            return false;
+        }
+
+        $adapter->beginTransaction();
+        foreach ($sql_array as $sql) {
+            $re = $adapter->query($sql);
+            if (false === $re) {
+                $this->error_code = $adapter->errorCode();
+                $this->error_info = $adapter->errorInfo();
+                $this->rollBack();
+                return false;//如果单条执行失败，则直接跳回
+            }
+        }
+
+        $re = $adapter->commit();
+        if (false === $re) {
+            $this->error_code = $adapter->errorCode();
+            $this->error_info = $adapter->errorInfo();
+        }
+        return $re;
+    }
 	
 	/**
 	 * 在$this->main_table中获取$filed = $value的记录
@@ -129,6 +160,14 @@ class Yun_Db_Main {
 	 */
 	public function select($field, $value) {
 		$builder = $this->getMainBuilder();
+        $field   = $this->quote($field);
+        $value   = $this->quote($value);
+        $table   = $this->getMainTable();
+
+        if (in_array(false, array($field, $value, $table), true)) {
+            return false;
+        }
+
 		$sql = $builder->sqlOfSelect($this->getMainTable(), $field, $value);
 		return $this->query($sql);
 	}
@@ -140,7 +179,13 @@ class Yun_Db_Main {
 	 */
 	public function selectAll() {
 		$builder = $this->getMainBuilder();
-		$sql = $builder->sqlOfSelectAll();
+
+        $table = $this->getMainTable();
+        if (false === $table) {
+            return false;
+        }
+        
+        $sql = $builder->sqlOfSelectAll($table);
 		return $this->query($sql);
 	}
 	
@@ -159,8 +204,17 @@ class Yun_Db_Main {
 	 * @return array
 	 */
 	public function selectOneRow($field, $value, array $order_by) {
-		$builder = $this->getMainBuilder();
-		$sql     = $builder->sqlOfSelectOneRow($this->getMainTable(), $field, $value, $order_by);
+        $builder    = $this->getMainBuilder();
+        $field      = $this->quote($field);
+        $table      = $this->getMainTable();
+        $value      = $this->quote($value);
+        $order_by   = $this->quoteArray($order_by);
+
+        if (in_array(false, array($field, $value, $table, $order_by), true)) {
+            return false;
+        }
+
+		$sql     = $builder->sqlOfSelectOneRow($table, $field, $value, $order_by);
 		return $this->query($sql);
 	}
 	
@@ -172,8 +226,17 @@ class Yun_Db_Main {
 	 * @return array
 	 */
 	public function selectByMuiltyValue($field, array $value) {
-		$builder = $this->getMainBuilder();
-		$sql     = $builder->sqlOfSelectByMuiltyValue($this->getMainTable(), $field, $value);
+        $builder = $this->getMainBuilder();
+        
+        $field = $this->quote($field);
+        $value = $this->quoteArray($value_array);
+        $table = $this->getMainTable();
+
+        if (in_array(false, array($field, $value, $table), true) ) {
+            return false;
+        }
+
+		$sql = $builder->sqlOfSelectByMuiltyValue($table, $field, $value);
 		return $this->query($sql);
 	}
 	
@@ -184,18 +247,16 @@ class Yun_Db_Main {
 	 * @return bool|int false代表操作失败，true代表成功，int代表insert_id(如果表中相应字段的话)
 	 */
 	public function insert(array $row) {
-		$builder = $this->getMainBuilder();
-		$sql     = $builder->sqlOfInsert($this->getMainTable(), $row);
-		$adapter = $this->getAdapter();
-		if (false === $adapter) {
-			return false;
-		}
-		
-		$re = $this->query($sql);
-		if (false === $re) {
-			return false;
-		}
-		return $adapter->lastInsertId();
+        $builder = $this->getMainBuilder();
+        $table = $this->getMainTable();
+        $row   = $this->quoteArray($row);
+
+        if (false === $table || false === $row) {
+            return false;
+        }
+
+        $sql     = $builder->sqlOfInsert($table, $row);
+        return $this->query($sql);
 	}
 	
 	/**
@@ -210,7 +271,16 @@ class Yun_Db_Main {
 	 */
 	public function insertMuiltyRow(array $row_array, $chunk_size=0) {
 		$builder = $this->getMainBuilder();
-		$sql	 = $builder->sqlOfInsertMuiltyRow($this->getMainTable(), $row_array);
+        $table = $this->getMainTable();
+        foreach ($row_array as $key=>$value) {
+            $row_array[$key] = $this->quoteArray($value);
+            if (false === $row_array[$key]) {
+                return false;
+            }
+        }
+        
+        $sql_array = $builder->sqlOfInsertMuiltyRow($table, $row_array);
+        return $this->queryTranction($sql_array);
 	}
 
 	/**
@@ -222,8 +292,17 @@ class Yun_Db_Main {
 	 * @return bool
 	 */
 	public function update(array $row, $field, $value) {
-		$builder = $this->getMainBuilder();
-		$sql     = $builder->sqlOfUpdate($this->getMainTable(), $row, $field, $value);
+        $builder = $this->getMainBuilder();
+        $row   = $this->quoteArray($row);
+        $field = $this->quote($field);
+        $value = $this->quote($value);
+        $table = $this->getMainTable();
+
+        if (in_array(false, array($row, $field, $value, $table), true)) {
+            return false;
+        }
+
+		$sql     = $builder->sqlOfUpdate($table, $row, $field, $value);
 		return $this->query($sql);
 	}
 	
@@ -236,7 +315,11 @@ class Yun_Db_Main {
 	 */
 	public function delete($field, $value) {
 	    $builder = $this->getMainBuilder();
-	    $sql     = $builder->sqlOfDelete($this->getMainTable(), $field, $value);
+        $table = $this->getMainTable();
+        $field = $this->quote($field);
+        $value = $this->quote($value);
+
+	    $sql     = $builder->sqlOfDelete($table, $field, $value);
 	    return $this->query($sql);
 	}
 	
@@ -246,7 +329,7 @@ class Yun_Db_Main {
 	 * @return string
 	 */
 	public function getMainTable() {
-		return $this->main_table;
+		return $this->quote($this->main_table);
 	}
 	
 	/**
@@ -258,6 +341,39 @@ class Yun_Db_Main {
 	    $this->initConf();
 	    return $this->main_conf->getBuilder();
 	}
+
+    /**
+     * 转义字符串，防止sql注入
+     *
+     * @param string
+     * @return string 转义后的字符串
+     */
+    public function quote($string) {
+        $adapter = $this->getAdapter();
+        if (false === $adapter ) {
+            return false;
+        }
+
+        return $adapter->quote($string);
+    }
+
+    public function quoteArray($array) {
+        $adapter = $this->getAdapter();
+        if (false === $adapter) {
+            return false;
+        }
+
+        $tmp = array();
+        foreach ($array as $k=>$v) {
+            $k = $adapter->quote($k);
+            $v = $adapter->quote($v);
+            if (false === $k || false === $v) {
+                return false;
+            }
+            $tmp[$k] = $v;
+        }
+        return $tmp;
+    }
 	
 	public function errorCode() {
 		return $this->error_code;
