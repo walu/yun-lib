@@ -63,6 +63,11 @@
  */
 class Yun_Db_Main {
     
+    /**
+     * Yun_Db_Main 默认使用的Yun_Conf配置项
+     *
+     * @var string
+     */
     const CONF_KEY = 'yun_db_conf';
     
     /**
@@ -203,7 +208,7 @@ class Yun_Db_Main {
 	 * @param array $order_by 如( 'id'=>'desc', 'date'=>'asc' )
 	 * @return array
 	 */
-	public function selectOneRow($field, $value, array $order_by) {
+	public function selectOneRow($field, $value, array $order_by = array()) {
         $builder    = $this->getMainBuilder();
         $field      = $this->quote($field);
         $table      = $this->getMainTable();
@@ -354,10 +359,21 @@ class Yun_Db_Main {
             return false;
         }
 
-        return $adapter->quote($string);
+        $re = $adapter->quote($string);
+        if (false === $re) {
+            $this->error_code = $adapter->errorCode();
+            $this->error_info = $adapter->errorInfo();
+        }
+        return $re;
     }
-
-    public function quoteArray($array) {
+    
+    /**
+     * 将一个一维数组的key与value都进行转义
+     *
+     * @param array $array
+     * @return array
+     */
+    public function quoteArray(array $array) {
         $adapter = $this->getAdapter();
         if (false === $adapter) {
             return false;
@@ -368,6 +384,8 @@ class Yun_Db_Main {
             $k = $adapter->quote($k);
             $v = $adapter->quote($v);
             if (false === $k || false === $v) {
+                $this->error_code = $adapter->errorCode();
+                $this->error_info = $adapter->errorInfo();
                 return false;
             }
             $tmp[$k] = $v;

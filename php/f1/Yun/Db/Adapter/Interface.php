@@ -27,11 +27,22 @@ interface Yun_Db_Adapter_Interface {
 	public function beginTransaction();
 	
 	/**
-	 * 提交事务
+     * 提交事务
+     *
+     * 执行后切换回自动执行状态
 	 * 
 	 * @return bool
 	 */
-	public function commit();
+    public function commit();
+
+    /**
+     * 撤销事务
+     *
+     * 执行后切换回自动执行状态
+     *
+     * @return bool
+     */
+    public function rollback();
 	
 	/**
 	 * 返回刚才执行insert语句对应的自增id或序列的值

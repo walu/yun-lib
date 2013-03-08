@@ -42,10 +42,10 @@ interface Yun_Db_Builder_Interface {
 	 * 
 	 * @param string $field
 	 * @param string $value
-	 * @param array $order_by
+	 * @param array $order_by 默认值 array，表示不进行排序【如果为唯一行，切忌！】
 	 * @return string
 	 */
-	public function sqlOfSelectOneRow($table, $field, $value, array $order_by);
+	public function sqlOfSelectOneRow($table, $field, $value, array $order_by=array());
 	
 	/**
 	 * 获取一条select语句，要求$field的值与$value的某个值相等

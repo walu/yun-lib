@@ -66,6 +66,14 @@ abstract class Yun_Db_Adapter_Pdo implements Yun_Db_Adapter_Interface {
 	public function commit() {
 		return $this->pdo->commit();
 	}
+
+    /**
+	 * @see Yun_Db_Adapter_Interface::rollback()
+	 */
+	public function rollback() {
+		return $this->pdo->rollback();
+	}
+
 	
 	/**
 	 * @see Yun_Db_Adapter_Interface::quote()

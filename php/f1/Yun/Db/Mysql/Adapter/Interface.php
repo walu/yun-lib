@@ -15,7 +15,7 @@ interface Yun_Db_Mysql_Adapter_Interface extends Yun_Db_Adapter_Interface {
      * @param string $pass
      * @param string $dbname
      * @param string $port
-     * @param string $socket http://cn2.php.net/manual/zh/mysqli.construct.php
+     * @param string $socket http://www.php.net/manual/zh/mysqli.construct.php
      * @return bool true:连接成功 false:连接失败
      */
     public function connect($host, $user, $pass, $dbname, $port, $socket='');

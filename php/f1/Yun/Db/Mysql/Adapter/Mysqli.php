@@ -69,16 +69,21 @@ class Yun_Db_Mysql_Adapter_Mysqli implements Yun_Db_Mysql_Adapter_Interface {
      * @see Yun_Db_Adapter_Interface::beginTransaction()
      */
     public function beginTransaction() {
-        return $this->mysqli->autocommit(false);
+        return $this->mysqli->query("BEGIN");
     }
     
     /**
      * @see Yun_Db_Adapter_Interface::commit()
      */
     public function commit() {
-        $re = $this->mysqli->commit();
-        $this->mysqli->autocommit(true);
-        return $re;
+        return $this->query("COMMIT");
+    }
+ 
+    /**
+     * @see Yun_Db_Adapter_Interface::rollback()
+     */
+    public function roolback() {
+        return $this->query("ROLLBACK");
     }
     
     /**
