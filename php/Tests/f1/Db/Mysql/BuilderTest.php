@@ -6,15 +6,7 @@ class Yun_Db_Mysql_BuilderTest extends PHPUnit_Framework_TestCase {
 	public function getBuilderForTest() {
 		
 		if (null === $this->builder) {		
-			$adapter = $this->getMock('Yun_Db_Mysql_Adapter_Mysqli', array('quote'));
-			$adapter->expects($this->any())->method('quote')->will($this->returnArgument(0));
-			
-			$obj = $this->getMock('Yun_Db_Mysql_Conf', array('getAdapter'));
-			$obj->expects($this->any())
-	            ->method('getAdapter')
-	            ->will($this->returnValue($adapter));
-
-			$this->builder = Yun_Db_Mysql_Builder::getInstance($obj);
+			$this->builder = Yun_Db_Mysql_Builder::getInstance();
 		}
 		
 		return array(array($this->builder));

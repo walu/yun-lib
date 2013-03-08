@@ -180,7 +180,7 @@ class Yun_Db_Mysql_Conf implements Yun_Db_Conf_Interface {
 	 * @see Yun_Db_Conf_Interface::getBuilder()
 	 */
 	public function getBuilder() {
-		return Yun_Db_Mysql_Builder::getInstance($this);
+		return Yun_Db_Mysql_Builder::getInstance();
 	}
 	
 	public function errorCode() {

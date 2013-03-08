@@ -4,39 +4,34 @@
  * Mysql数据库的SQL - builder
  * 用来生成一些常用的sql语句
  * 
+ * @see Yun_Db_Builder_Interface
  * @author walu<imcnan@gmail.com>
  */
 class Yun_Db_Mysql_Builder implements Yun_Db_Builder_Interface {
-	
-    private static $instance = array();
-    
+
     /**
-     * @var Yun_Db_Adapter_Interface
+     * 单例
+     *
+     * @var Yun_Db_Mysql_Builder
      */
-    private $adapter;
+    private static $instance = null;
     
     /**
      * 
-     * 传递conf主要是因为要进行quote，每一个Conf对应一个instance
-     * 
-     * @param Yun_Db_Conf_Interface $conf
+     * 获取单例
      * @return Yun_Db_Mysql_Builder
      */
-    public static function getInstance(Yun_Db_Conf_Interface $conf) {
-        $hash = spl_object_hash($conf);
-        if (!isset(self::$instance[$hash])) {
-            self::$instance[$hash] = new Yun_Db_Mysql_Builder($conf);
+    public static function getInstance() {
+        if (null === self::$instance) {
+            self::$instance = new Yun_Db_Mysql_Builder();
         }
-        return self::$instance[$hash];
+        return self::$instance;
     }
     
     /**
      * 构造函数
-     * 
-     * @param Yun_Db_Conf_Interface $conf
      */
-    private function __construct(Yun_Db_Conf_Interface $conf) {
-        $this->adapter = $conf->getAdapter();
+    private function __construct() {
     }
     
     /**
@@ -93,7 +88,6 @@ class Yun_Db_Mysql_Builder implements Yun_Db_Builder_Interface {
      * @see Yun_Db_Builder_Interface::sqlOfInsertMuiltyRow()
      */
     public function sqlOfInsertMuiltyRow($table, array $row_array) {
-       $table = $this->adapter->quote($table);
        $first_row = reset($row_array);
        $sql_field = $this->arrayToInsertField($first_row);
        
