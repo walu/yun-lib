@@ -126,6 +126,29 @@ class Yun_Db_Main {
 	}
 
     /**
+     * 执行一条SQL并返回其第一行
+     *
+     * 如果没有数据则返回空数组，sql执行失败返回false
+	 * 
+	 * @param string $sql
+	 * @return bool|array
+	 */
+	public function queryOneRow($sql) {
+	    $sql_prefix = substr($sql, 0, 6);
+		$adapter = $this->getAdapter($sql_prefix);
+		if (false === $adapter) {
+			return false;
+		}
+		$re = $adapter->query($sql);
+		if (false === $re) {
+			$this->error_code = $adapter->errorCode();
+			$this->error_info = $adapter->errorInfo();
+        }
+        $re = reset($re);
+		return $re;
+	}
+
+    /**
      * 以事务的方式执行多条Sql语句
      *
      * @param array $sql_array
@@ -220,7 +243,7 @@ class Yun_Db_Main {
         }
 
 		$sql     = $builder->sqlOfSelectOneRow($table, $field, $value, $order_by);
-		return $this->query($sql);
+        return $this->queryOneRow($sql);
 	}
 	
 	/**
