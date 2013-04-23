@@ -6,13 +6,14 @@ class Yun_Log_File implements Yun_Log_Handler_Interface {
     private $handler_id;
 
     private $log_file_path;
+
+    private $fp = null;
+
+    private $error_code;
+    private $error_info;
     
     public function __construct($handler_id, $log_file_path = null) {
         $this->handler_id = $handler_id;
-        if (null === $log_file_path) {
-            $conf = Yun_Conf::getInstance();
-            $log_file_path = $conf->get(self::CONF_KEY);
-        }
         $this->log_file_path = $log_file_path;
     }
 
@@ -20,15 +21,25 @@ class Yun_Log_File implements Yun_Log_Handler_Interface {
         return $this->handler_id;
     }
 
-    public function log() {
-    
+    public function log($message) {
+        if (null === $this->fp) {
+            $this->fp = fopen($this->log_file_path, 'a');
+            if (!$this->fp) {
+                $this->error_code = -1;
+                $this->error_info = "cannot open log file {$log_file_path}";
+                Yun_Log::getInstance()->warning($this->error_info);
+                return false;
+            }
+        }
+        fwrite($this->fp, $message);
+        return true;
     }
 
-    public function error_code() {
-    
+    public function errorCode() {
+        return $this->error_code;
     }
 
-    public function error_info() {
-    
+    public function errorInfo() {
+        return $this->error_info; 
     }
 }

@@ -26,12 +26,12 @@ interface Yun_Log_Handler_Interface {
      *
      * @return string|int
      */
-    public function error_code();
+    public function errorCode();
 
     /**
      * 最近一次的错误信息
      *
      * @return string|int
      */
-    public function error_info();
+    public function errorInfo();
 }
