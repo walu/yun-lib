@@ -34,7 +34,7 @@ class Yun_String {
 	 * @param string $search
 	 * @return boolean 
 	 */
-	public function endWith($haystack, $search) {
+	public static function endWith($haystack, $search) {
 		$len = strlen($search);
 		return substr($haystack, 0, -$len)===$search;
 	}
@@ -46,7 +46,31 @@ class Yun_String {
 	 * @param string $search
 	 * @return boolean
 	 */
-	public function startWith($haystack, $search) {
+	public static function startWith($haystack, $search) {
 		return strpos($haystack, $search) === 0;
-	}
+    }
+
+    /**
+     * 生成随机字符串
+     *
+     * @param int $len      随机字符串长度
+     * @param string $dict  字典（字符串取值范围）
+     * @return string
+     */
+    public static function randomString($len, $dict='abcdefghijklmnopqrstuvwxyz0123456789') {
+        //don't use empty(): "0", " "
+        if (0 == strlen($dict)) {
+            return '';
+        }
+
+        $re = '';
+        $dict_len = strlen($dict);
+        $rand_max = $dict_len-1;
+        while ($len > 0) {
+            $key = mt_rand(0, $rand_max) % $dict_len;
+            $re .= $dict[$key];
+            $len--;
+        }
+        return $re;
+    }
 }
