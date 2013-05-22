@@ -1,4 +1,10 @@
 <?php
+/**
+ *
+ * 通过本模块快速实现bigpipe机制
+ *
+ * @author walu<imcnan@gmail.com>
+ */
 class Yun_Bigpipe_Main {
 
     private $p;
