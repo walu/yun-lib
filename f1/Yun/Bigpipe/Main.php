@@ -12,6 +12,8 @@ class Yun_Bigpipe_Main {
     private $total;
     private $count;
 
+    private $cache_for_ob = array();
+
     /**
      * 构造函数
      *
@@ -37,6 +39,33 @@ class Yun_Bigpipe_Main {
     }
 
     /**
+     * 执行操作，修改输出缓冲
+     *
+     * 本操作将修改输出缓冲，将网页内容在输出之前构造好。适合于喂蜘蛛等类似情况。
+     */
+    public function executeAndModifyOB() {
+        if (0==ob_get_level()) {
+            //没有开启缓冲的换，那什么也坐不了
+            //如果只是想并发获取结果，请直接使用Yun_Curl_Multi
+            return;
+        }
+
+        $this->cache_for_ob = array();
+        $this->p->execute(array($this, 'callbackModifyOB'));
+
+        $content = ob_get_clean();
+        foreach ($this->cache_for_ob as $key=>$value) {
+            $key = preg_quote($key);
+            $content = preg_replace(
+                "!(<([a-z]+)[^>]*?id\\s*=\\s*[\"']{$key}[\"'][^>]*?>).*?(</\\2\\s*>)!is", 
+                "\$1{$value}\$3",
+                $content
+            );
+        }
+        echo $content;
+    }
+
+    /**
      *
      * @param string $id 模板中的id，用于前端放置内容使用
      * @param string $api_response 必须是json格式的
@@ -56,15 +85,29 @@ class Yun_Bigpipe_Main {
         ob_flush();
     }
 
-    /* 
-    public function callbackModifyOB($id, $html, $css_url, $js_url) {
-        $html .= "<script language='javascript'>\n";
-        foreach ($css_url as $url) {
-            $html .= "Yun_Bigpipe.addCss({$url});\n";
+    public function callbackModifyOB($id, $api_response) {
+        $api_response = json_decode($api_response, true);
+        if (null === $api_response) {
+            $api_response = array();
         }
-        foreach ($js_url as $url) {
-            $html .= ""   
+        
+        $html = Yun_Array::get($api_response, 'html', '');
+            
+        $html .= "<script language='javascript'>";
+        
+        if (isset($api_response['css_url'])) {
+            !is_array($api_response['css_url']) && ($api_response['css_url'] = array($api_response['css_url']));
+            $tmp = json_encode($api_response['css_url']);
+            $html .= "Yun_Bigpipe.css_handler({$tmp});";
         }
+        
+        if (isset($api_response['js_url'])) {
+            !is_array($api_response['js_url']) && ($api_response['js_url'] = array($api_response['js_url']));
+            $tmp = json_encode($api_response['js_url']);
+            $html .= "Yun_Bigpipe.js_handler({$tmp});";
+        }
+
+        $html .= '</script>';
+        $this->cache_for_ob[$id] = $html;
     }
-     */
 }
