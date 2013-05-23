@@ -1,23 +1,23 @@
-function Yun_Bigpipe() {
+var Yun_Bigpipe = function() {
     var _self = this;
     
     var js_list = {};
 
-    _self.css_handler = function(css_url_array) {
+    this.css_handler = function(css_url_array) {
         for (i=0; i< css_url_array.length; i++) {
             jQuery("head").append("<link href='"+css_url_array[i]+"' rel='stylesheet' type='text/css' />");
         }
     }
 
-    _self.js_handler = function(js_url_array) {
+    this.js_handler = function(js_url_array) {
     
     }
 
-    _self.html_handler = function(id, html) {
-        JQuery('#'+id).html(html);
+    this.html_handler = function(id, html) {
+        jQuery('#'+id).html(html);
     }
     
-    _self.onPageletArrival = function(data) {
+    this.onPageletArrive = function(data) {
         if (!('id' in data) || !('is_last' in data)) {
             return;
         }
@@ -38,6 +38,7 @@ function Yun_Bigpipe() {
         if (data.is_last) {
             //加载javascript
         }
-
     }
-}
+
+    return this;
+}();

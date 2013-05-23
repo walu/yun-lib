@@ -30,6 +30,9 @@ class Yun_Bigpipe_Main {
      *
      */
     public function executeAndEcho() {
+        if (!headers_sent()) {
+            header('Transfer-Encoding: chunked');
+        }
         $this->p->execute(array($this, 'callbackEcho'));
     }
 
@@ -45,7 +48,7 @@ class Yun_Bigpipe_Main {
             $api_response = array();
         }
         $api_response['id'] = $id;
-        
+        $api_response['is_last'] = $this->count == $total;
         $data = json_encode( $api_response );
         echo "<script language='javascript'>Yun_Bigpipe.onPageletArrive({$data});</script>";
         
