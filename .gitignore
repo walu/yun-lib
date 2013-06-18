@@ -11,6 +11,7 @@
 *.la
 *.a
 
+phpunit.phar
 php/phpunit.phar
 php/html
 php/test.php
@@ -18,3 +19,4 @@ php/test.php
 .buildpath
 .project
 .settings
+
