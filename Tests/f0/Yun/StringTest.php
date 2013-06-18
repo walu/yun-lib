@@ -1,7 +1,7 @@
 <?php
 /**
  * 
- * @author work
+ * @author walu 
  *
  */
 class Yun_StringTest extends PHPUnit_Framework_TestCase {
@@ -28,4 +28,16 @@ class Yun_StringTest extends PHPUnit_Framework_TestCase {
         $re = Yun_String::randomString(5, '');
         $this->assertEmpty($re);
     }
+
+    public function test_str2Hex() {
+        $str_hex = "\xef\x12";
+        $this->assertEquals("\\xef\\x12", Yun_String::str2Hex($str_hex));
+    }
+
+
+    public function test_str2Oct() {
+        $str_hex = "\77\12";
+        $this->assertEquals("\\77\\12", Yun_String::str2Oct($str_hex));
+    }
+
 }

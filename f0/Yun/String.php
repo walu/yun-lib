@@ -73,4 +73,34 @@ class Yun_String {
         }
         return $re;
     }
+
+    /**
+     * 将string转换成16进制的表示方式
+     *
+     *
+     * @param string str
+     * @return string
+     */
+    public static function str2Hex($str) {
+        $str = bin2hex($str);
+        $str = chunk_split($str, 2, '\\x');
+        return '\\x' . substr($str, 0, -2);
+    }
+    
+
+    /**
+     * 将string转换成8进制的表示方式
+     *
+     * @param string $str
+     * @return string
+     */
+    public static function str2Oct($str) {
+        $len = strlen($str);
+        $re = '';
+        
+        for ($i=0; $i<$len; $i++) {
+            $re .= '\\'.decoct(ord($str[$i]));    
+        }
+        return $re;
+    } 
 }
