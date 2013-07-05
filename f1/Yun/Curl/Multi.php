@@ -84,7 +84,7 @@ class Yun_Curl_Multi {
             } while (CURLM_CALL_MULTI_PERFORM == $re);
 
             while ($still_running) {
-                if (-1 != curl_multi_select($multi_handler) ) {
+                if (-1 != curl_multi_select($multi_handler, 0.1) ) {
                     do {
                         curl_multi_exec($multi_handler, $still_running);
                     } while (CURLM_CALL_MULTI_PERFORM == $re);    
