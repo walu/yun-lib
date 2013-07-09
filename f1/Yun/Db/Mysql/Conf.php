@@ -49,6 +49,9 @@ class Yun_Db_Mysql_Conf implements Yun_Db_Conf_Interface {
 	
 	private $error_code;
 	private $error_info;
+	
+	private $instance_master = false;
+	private $instance_slave = false;
 
 	/**
 	 * 删除所有的数据库配置
@@ -131,49 +134,65 @@ class Yun_Db_Mysql_Conf implements Yun_Db_Conf_Interface {
 	public function getAdapter($sql_prefix = '') {
 		$act = substr($sql_prefix, 0, 6);
 		if ('SELECT'==$act || 'EXPLAIN'==$act) {
-			$conf = $this->slave_server;
+		    return $this->getSlaveInstance();
 		} else {
-			$conf = $this->master_server;
+		    return $this->getMasterInstance();
 		}
-		 
-		$server     = Yun_Array::rand($conf);
-		 
-		$host       = Yun_Array::get($server, 'host', '');
-		$user       = Yun_Array::get($server, 'user', '');
-		$pass       = Yun_Array::get($server, 'pass', '');
-		$dbname     = Yun_Array::get($server, 'dbname', '');
-		$port       = Yun_Array::get($server, 'port', '');
-		$socket     = Yun_Array::get($server, 'socket', '');
-		 
-		$hash = "{$host}_{$user}_{$pass}_{$dbname}_{$port}_{$socket}";
-		if (!isset($this->adapter_instance[$hash])) {
-			$class_name = $this->adapter_class_name;
-			$this->adapter_instance[$hash] = new $class_name();
-			if (! ($this->adapter_instance[$hash] instanceof Yun_Db_Mysql_Adapter_Interface)) {
-				$error_msg = 'Yun_Db_Mysql_Conf\'s adapter must be implements Yun_Db_Mysql_Adapter_Interface.';
-				trigger_error($error_msg, E_USER_ERROR);
-			}
-			 
-			$retry_time = $this->retry_time_connect;
-			while (true) {
-				$retry_time--;
-				$re = $this->adapter_instance[$hash]->connect($host, $user, $pass, $dbname, $port, $socket);
-				if (true === $re) {
-					$this->adapter_instance[$hash]->query("SET NAMES {$this->default_names}");
-					break;
-				}
-
-				if ($retry_time<=0) {
-					$error = $this->adapter_instance[$hash]->errorInConnect();
-					$this->error_code = $error['error_code'];
-					$this->error_info  = $error['error_info'];
-					return false;
-				}
-			}//end while
-			
-		}//endif
-
-		return $this->adapter_instance[$hash];
+	}
+	
+	protected function getSlaveInstance() {
+	    if (false === $this->instance_slave) {
+	        $this->instance_slave = $this->getAdapterInstance($this->slave_server);
+	    }
+	    return $this->instance_slave;
+	}
+	
+	protected function getMasterInstance() {
+	    if (false === $this->instance_master) {
+	        $this->instance_slave = $this->getAdapterInstance($this->master_server);
+	    }
+	    return $this->instance_master;
+	}
+	
+	protected function getAdapterInstance(array $conf) {
+	    $server     = Yun_Array::rand($conf);
+	    	
+	    $host       = Yun_Array::get($server, 'host', '');
+	    $user       = Yun_Array::get($server, 'user', '');
+	    $pass       = Yun_Array::get($server, 'pass', '');
+	    $dbname     = Yun_Array::get($server, 'dbname', '');
+	    $port       = Yun_Array::get($server, 'port', '');
+	    $socket     = Yun_Array::get($server, 'socket', '');
+	    	
+	    $hash = "{$host}_{$user}_{$pass}_{$dbname}_{$port}_{$socket}";
+	    if (!isset($this->adapter_instance[$hash])) {
+	        $class_name = $this->adapter_class_name;
+	        $this->adapter_instance[$hash] = new $class_name();
+	        if (! ($this->adapter_instance[$hash] instanceof Yun_Db_Mysql_Adapter_Interface)) {
+	            $error_msg = 'Yun_Db_Mysql_Conf\'s adapter must be implements Yun_Db_Mysql_Adapter_Interface.';
+	            trigger_error($error_msg, E_USER_ERROR);
+	        }
+	    
+	        $retry_time = $this->retry_time_connect;
+	        while (true) {
+	            $retry_time--;
+	            $re = $this->adapter_instance[$hash]->connect($host, $user, $pass, $dbname, $port, $socket);
+	            if (true === $re) {
+	                $this->adapter_instance[$hash]->query("SET NAMES {$this->default_names}");
+	                break;
+	            }
+	    
+	            if ($retry_time<=0) {
+	                $error = $this->adapter_instance[$hash]->errorInConnect();
+	                $this->error_code = $error['error_code'];
+	                $this->error_info  = $error['error_info'];
+	                return false;
+	            }
+	        }//end while
+	        	
+	    }//endif
+	    
+	    return $this->adapter_instance[$hash];
 	}
 
 	/**
