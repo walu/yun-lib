@@ -155,7 +155,8 @@ class Yun_Db_Main {
      * @return bool
      */
     public function queryTranction(array $sql_array) {
-        $adapter = $this->getAdapter();
+        $sql_prefix=reset($sql_array);
+        $adapter = $this->getAdapter($sql_prefix);
         if (false === $adapter) {
             return false;
         }
