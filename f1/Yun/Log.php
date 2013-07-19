@@ -39,6 +39,9 @@ class Yun_Log {
 
     private $debug_flag = false;
 
+
+    public static $request_id = null;
+
     /**
      * 获取Yun_Log实例
      *
@@ -46,6 +49,7 @@ class Yun_Log {
      */
     public static function getInstance() {
         if (null === self::$instance) {
+            self::$request_id = php_uname('n').'-'.getmypid().'-'.microtime(true);
             self::$instance = new Yun_Log();
         }
         return self::$instance;
@@ -141,11 +145,11 @@ class Yun_Log {
     }
 
     private function log($level, $msg, $handler_id) {
-        $loginfo = func($level, $msg);
         $handler = Yun_Array::get($this->handler, $handler_id);
         if (! ($handler instanceof Yun_Log_Handler_Interface) ) {
             return $this->error($msg, $error, self::DEFAULT_HANDLER_ID);
         }
+        $loginfo = sprintf("%s %s {$level} %s\n", date('Ymd-H:i:s'), self::$request_id, $msg);
         $handler->log($loginfo);
     }
 }
