@@ -10,7 +10,7 @@ var Yun_Bigpipe = function() {
     }
 
     this.js_handler = function(js_url_array) {
-         for (i=0; i< css_url_array.length; i++) {
+         for (i=0; i< js_url_array.length; i++) {
             jQuery("head").append("<script language='javascript' src='"+js_url_array[i]+"'></script>");
         }
     }
