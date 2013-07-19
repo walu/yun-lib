@@ -18,6 +18,7 @@
  * </code>
  *
  * @author walu<imcnan@gmail.com>
+ * @link https://github.com/walu/yun-lib
  */
 class Yun_Curl_Multi {
 
