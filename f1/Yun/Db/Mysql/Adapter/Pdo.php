@@ -1,12 +1,8 @@
 <?php
 /**
- * 
  * @author walu<imcnan@gmail.com>
  */
-class Yun_Db_Mysql_Adapter_Pdo extends Yun_Db_Adapter_Pdo implements Yun_Db_Mysql_Adapter_Interface {
-	
-	private $error_code_in_connect;
-	private $error_info_in_connect;
+class Yun_Db_Mysql_Adapter_Pdo extends Yun_Db_Adapter_Pdo {
 	
 	/**
 	 * 
@@ -14,8 +10,16 @@ class Yun_Db_Mysql_Adapter_Pdo extends Yun_Db_Adapter_Pdo implements Yun_Db_Mysq
 	 * 
 	 * @see Yun_Db_Mysql_Adapter_Interface::connect()
 	 */
-	public function connect($host, $user, $pass, $dbname, $port, $socket='') {
+	public function connect(array $conf) {
 		try {
+			$socket = Yun_Array::get($conf, 'socket', '');
+			$host   = Yun_Array::get($conf, 'host');
+			$port   = Yun_Array::get($conf, 'port');
+			$dbname = Yun_Array::get($conf, 'dbname');
+			
+			$user   = Yun_Array::get($conf, 'user');
+			$pass   = Yun_Array::get($conf, 'pass');
+			
 			$dsn = ('' === $socket) 
 				? "mysql:host={$host};port={$port};dbname={$dbname}"  
 				: "mysql:unix_socket={$socket};dbname={$dbname}"
@@ -25,8 +29,8 @@ class Yun_Db_Mysql_Adapter_Pdo extends Yun_Db_Adapter_Pdo implements Yun_Db_Mysq
 			$this->initPdo($pdo);
 			return true;
 		} catch (Exception $e) {
-			$this->error_code_in_connect = $e->getCode();
-			$this->error_info_in_connect = $e->getMessage();
+			$this->error_code = $e->getCode();
+			$this->error_info = $e->getMessage();
 			return false;
 		}
 	}

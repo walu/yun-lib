@@ -6,37 +6,28 @@
  * 一、如何设置服务器连接，如：host、port等
  * 首先应先看自己数据库服务器的架构，根据实际情况来选择何时的方案：
  * 1. 只有一台数据库服务器
- * $conf = new Yun_Db_Mysql_Conf();
+ * $conf = new Yun_Db_Postgre_Conf();
  * $conf->addServer($host, $port, $uname, $pass, $db);
  *
  * 2. 采用了Mysql-proxy之类的负载均衡代理，这样来处理
- * $conf = new Yun_Db_Mysql_Conf();
+ * $conf = new Yun_Db_Postgre_Conf();
  * $conf->addServer($host_1, $port, $uname, $pass, $db);
  * $conf->addServer($host_2, $port, $uname, $pass, $db);
  * ......
  *
  * 3. 采用了主从架构（ 主读写 - 从读）
- * $conf = new Yun_Db_Mysql_Conf();
+ * $conf = new Yun_Db_Postgre_Conf();
  * $conf->addMasterServer(....);
  * .....
  * $conf->addSlaveServer(.....);
  * $conf->addSlaveServer(.....);
  * ....
  *
- * 二、如何选择合适的扩展[默认使用PDO]
- * 备注：扩展类型在脚本执行过程中只能设置一次，中间的再次更改不会起到任何作用
- *
- * 1. 使用mysqli扩展
- * $conf->useMysqliExt();
- *
- * 2.使用PDO扩展
- * $conf->usePdoExt();
- *
  * @author walu<imcnan@gmail.com>
  */
-class Yun_Db_Mysql_Conf implements Yun_Db_Conf_Interface {
+class Yun_Db_Postgre_Conf implements Yun_Db_Conf_Interface {
 
-	private $adapter_class_name = 'Yun_Db_Mysql_Adapter_Pdo';
+	private $adapter_class_name = 'Yun_Db_Postgre_Adapter_Pdo';
 
 	private $adapter_instance = array();
 
@@ -45,8 +36,6 @@ class Yun_Db_Mysql_Conf implements Yun_Db_Conf_Interface {
 
 	private $retry_time_connect = 3;
 
-	private $default_names = 'utf8';
-	
 	private $error_code;
 	private $error_info;
 	
@@ -64,7 +53,6 @@ class Yun_Db_Mysql_Conf implements Yun_Db_Conf_Interface {
 	/**
 	 *
 	 * 没有主从分布
-	 * 如只有一台服务器，或者采用了Mysql-proxy做负载均衡，则使用此方法增加服务器
 	 *
 	 * @param string $host
 	 * @param string $user
@@ -73,7 +61,7 @@ class Yun_Db_Mysql_Conf implements Yun_Db_Conf_Interface {
 	 * @param string $port
 	 * @param string $socket
 	 */
-	public function addServer($host, $user, $pass, $dbname, $port=3306, $socket='') {
+	public function addServer($host, $user, $pass, $dbname, $port=5432, $socket='') {
 		$row = array('host'=>$host, 'user'=>$user, 'pass'=>$pass, 'dbname'=>$dbname, 'port'=>$port, 'socket'=>$socket);
 		$this->master_server[] = $row;
 		$this->slave_server[]  = $row;
@@ -91,7 +79,7 @@ class Yun_Db_Mysql_Conf implements Yun_Db_Conf_Interface {
 	 * @param string $port
 	 * @param string $socket
 	 */
-	public function addMasterServer($host, $user, $pass, $dbname, $port, $socket='') {
+	public function addMasterServer($host, $user, $pass, $dbname, $port=5432, $socket='') {
 		$row = array('host'=>$host, 'user'=>$user, 'pass'=>$pass, 'dbname'=>$dbname, 'port'=>$port, 'socket'=>$socket);
 		$this->master_server[] = $row;
 	}
@@ -106,22 +94,9 @@ class Yun_Db_Mysql_Conf implements Yun_Db_Conf_Interface {
 	 * @param string $port
 	 * @param string $socket
 	 */
-	public function addSlaveServer($host, $user, $pass, $dbname, $port, $socket='') {
+	public function addSlaveServer($host, $user, $pass, $dbname, $port=5432, $socket='') {
 		$row = array('host'=>$host, 'user'=>$user, 'pass'=>$pass, 'dbname'=>$dbname, 'port'=>$port, 'socket'=>$socket);
 		$this->slave_server[]  = $row;
-	}
-
-	public function useMysqliExt() {
-		$this->adapter_class_name = 'Yun_Db_Mysql_Adapter_Mysqli';
-	}
-
-	public function usePdoExt() {
-		$this->adapter_class_name = 'Yun_Db_Mysql_Adapter_Pdo';
-	}
-
-	public function setNames($names) {
-		$names = htmlspecialchars($names, ENT_QUOTES);
-		$this->default_names = $names;
 	}
 
 	/**
@@ -156,13 +131,13 @@ class Yun_Db_Mysql_Conf implements Yun_Db_Conf_Interface {
 	
 	protected function getAdapterInstance(array $conf) {
 	    $server     = Yun_Array::rand($conf);
-	    	$hash = implode('_', $server);
 	    
+	    $hash = implode('_', $server);
 	    if (!isset($this->adapter_instance[$hash])) {
 	        $class_name = $this->adapter_class_name;
 	        $this->adapter_instance[$hash] = new $class_name();
 	        if (! ($this->adapter_instance[$hash] instanceof Yun_Db_Adapter_Interface)) {
-	            $error_msg = 'Yun_Db_Mysql_Conf\'s adapter must be implements Yun_Db_Mysql_Adapter_Interface.';
+	            $error_msg = 'Yun_Db_Postgre_Conf\'s adapter must be implements Yun_Db_Postgre_Adapter_Interface.';
 	            trigger_error($error_msg, E_USER_ERROR);
 	        }
 	    
@@ -170,8 +145,8 @@ class Yun_Db_Mysql_Conf implements Yun_Db_Conf_Interface {
 	        while (true) {
 	            $retry_time--;
 	            $re = $this->adapter_instance[$hash]->connect($server);
-	            if (true === $re) {
-	                $this->adapter_instance[$hash]->query("SET NAMES {$this->default_names}");
+                
+                if (true === $re) {
 	                break;
 	            }
 	    
@@ -191,7 +166,7 @@ class Yun_Db_Mysql_Conf implements Yun_Db_Conf_Interface {
 	 * @see Yun_Db_Conf_Interface::getBuilder()
 	 */
 	public function getBuilder() {
-		return Yun_Db_Mysql_Builder::getInstance();
+		return Yun_Db_Postgre_Builder::getInstance();
 	}
 	
 	public function errorCode() {

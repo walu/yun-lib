@@ -29,8 +29,18 @@ class Yun_Db_Mysql_Adapter_Mysqli implements Yun_Db_Mysql_Adapter_Interface {
     /** 
      * @see Yun_Db_Mysql_Adapter_Interface::connect()
      */
-    public function connect($host, $user, $pass, $dbname, $port, $socket='') {
-        $this->mysqli = new mysqli($host, $user, $pass, $dbname, $port, $socket);
+    public function connect(array $conf) {
+        	
+    	
+    		$socket = Yun_Array::get($conf, 'socket', '');
+    		$host   = Yun_Array::get($conf, 'host');
+    		$port   = Yun_Array::get($conf, 'port');
+    		$dbname = Yun_Array::get($conf, 'dbname');
+    		
+    		$user   = Yun_Array::get($conf, 'user');
+    		$pass   = Yun_Array::get($conf, 'pass');
+    	
+    		$this->mysqli = new mysqli($host, $user, $pass, $dbname, $port, $socket);
         if ($this->mysqli->connect_errno) {
             $this->error_code = $this->mysqli->connect_errno;
             $this->error_info = $this->mysqli->connect_error;
@@ -104,23 +114,13 @@ class Yun_Db_Mysql_Adapter_Mysqli implements Yun_Db_Mysql_Adapter_Interface {
      * @see Yun_Db_Adapter_Interface::errorCode()
      */
     public function errorCode() {
-        return $this->errorCode();
+        return $this->error_code;
     }
     
     /**
      * @see Yun_Db_Adapter_Interface::errorInfo()
      */
     public function errorInfo() {
-        return $this->errorInfo();
-    }
-    
-    /**
-     * @see Yun_Db_Mysql_Adapter_Interface::errorInConnect()
-     */
-    public function errorInConnect() {
-    	return array(
-    		'error_code' => $this->error_code,
-    		'error_info' => $this->error_info,
-    	);
+        return $this->error_info;
     }
 }

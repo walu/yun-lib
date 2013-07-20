@@ -129,8 +129,7 @@ class Yun_Db_Postgre_Builder implements Yun_Db_Builder_Interface {
      * @return string
      */
     protected function arrayToInsertValue(array $row) {
-        $row = array_map(array($this, 'filterValueToSql'), $row);
-        return "('" . implode("', '", $row) .  ')';
+        return "('" . implode("', '", $row) .  "')";
     }
     
     /**

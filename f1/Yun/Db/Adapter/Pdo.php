@@ -18,7 +18,19 @@ abstract class Yun_Db_Adapter_Pdo implements Yun_Db_Adapter_Interface {
      * 
      * @var Pdo
      */
-    protected $pdo;
+    protected $pdo = null;
+    
+    /**
+     * 最后一次错误码
+     * @var string
+     */
+    protected $error_code;
+    
+    /**
+     * 最后一次错误信息
+     * @var string
+     */
+    protected $error_info;
     
     /**
      * 这个方法就别覆盖了～
@@ -37,41 +49,62 @@ abstract class Yun_Db_Adapter_Pdo implements Yun_Db_Adapter_Interface {
      * @see Yun_Db_Adapter_Interface::query()
      */
 	public function query($sql) {
-				
-	    $sql = trim($sql);
-	    //" DELETE UPDATE INSERT SELECT "
-	    $act = strtoupper(substr($sql, 0, 6));
-	    if ("DELETE"==$act || "UPDATE"==$act || "INSERT"==$act) {
-	        $re = $this->pdo->exec($sql);
-	        $re = false !== $re;
-	        return $re;
-	    } 
-	    $re = $this->pdo->query($sql);
+		if (null === $this->pdo) {
+			return false;
+		}
+		
+		$re = $this->pdo->query($sql);
 	    if ($re instanceof PDOStatement) {
-	        return $re->fetchAll(PDO::FETCH_ASSOC);
+	    		$re = $re->fetchAll(PDO::FETCH_ASSOC);
+	    } elseif (false === $re) {
+			$this->setPdoError();
 	    }
-	    return false;
+	    return $re;
 	}
 	
 	/**
 	 * @see Yun_Db_Adapter_Interface::beginTransaction()
 	 */
 	public function beginTransaction() {
-	    return $this->pdo->beginTransaction();	
+		if (null === $this->pdo) {
+			return false;
+		}
+		
+		$re = $this->pdo->beginTransaction();
+	    if (false === $re) {
+			$this->setPdoError();
+	    }
+	    return $re;
 	}
 	
 	/**
 	 * @see Yun_Db_Adapter_Interface::commit()
 	 */
 	public function commit() {
-		return $this->pdo->commit();
+		if (null === $this->pdo) {
+			return false;
+		}
+		
+		$re = $this->pdo->commit();
+		if (false === $re) {
+			$this->setPdoError();
+		}
+		return $re;
 	}
 
     /**
 	 * @see Yun_Db_Adapter_Interface::rollback()
 	 */
 	public function rollback() {
-		return $this->pdo->rollback();
+		if (null === $this->pdo) {
+			return false;
+		}
+		
+		$re = $this->pdo->rollback();
+		if (false === $re) {
+			$this->setPdoError();
+		}
+		return $re;
 	}
 
 	
@@ -79,6 +112,9 @@ abstract class Yun_Db_Adapter_Pdo implements Yun_Db_Adapter_Interface {
 	 * @see Yun_Db_Adapter_Interface::quote()
 	 */
 	public function quote($string) {
+		if (null === $this->pdo) {
+			return false;
+		}
 		$string = $this->pdo->quote($string);
 		$string = substr($string, 1, strlen($string)-2);
 		return $string;
@@ -88,14 +124,22 @@ abstract class Yun_Db_Adapter_Pdo implements Yun_Db_Adapter_Interface {
 	 * @see Yun_Db_Adapter_Interface::isConnect()
 	 */
 	public function isConnect() {
-		return true;
+		return null === $this->pdo;
 	}
 	
 	/**
 	 * @see Yun_Db_Adapter_Interface::lastInsertId()
 	 */
 	public function lastInsertId() {
-		return $this->pdo->lastInsertId();
+		if (null === $this->pdo) {
+			return false;
+		}
+		
+		$re = $this->pdo->lastInsertId();
+		if (false === $re) {
+			$this->setPdoError();
+		}
+		return $re;
 	}
 	
 	
@@ -103,14 +147,20 @@ abstract class Yun_Db_Adapter_Pdo implements Yun_Db_Adapter_Interface {
 	 * @see Yun_Db_Adapter_Interface::errorCode()
 	 */
 	public function errorCode() {
-	    return $this->pdo->errorCode();	
+		return $this->error_code;
 	}
 	
 	/**
 	 * @see Yun_Db_Adapter_Interface::errorInfo()
 	 */
 	public function errorInfo() {
+		return $this->error_info;
+	}
+	
+	protected function setPdoError() {
+		$this->error_code = $this->pdo->errorCode();
+		
 		$info = $this->pdo->errorInfo();
-		return implode(' ', $info);
+		$this->error_info = implode(' ', $info);
 	}
 }

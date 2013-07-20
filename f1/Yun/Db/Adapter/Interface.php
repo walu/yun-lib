@@ -7,7 +7,15 @@
  * @author walu<imcnan@gmail.com>
  */
 interface Yun_Db_Adapter_Interface {
-    
+
+    /**
+     * 连接数据库
+     *
+     * @param array $conf
+     * @return bool
+     */
+    public function connect(array $conf);
+
     /**
      * 执行一条SQL
      * 

@@ -279,7 +279,7 @@ class Yun_Db_Main {
         $builder = $this->getMainBuilder();
         $table = $this->getMainTable();
         $row   = $this->quoteArray($row);
-
+        
         if (false === $table || false === $row) {
             return false;
         }
@@ -434,8 +434,8 @@ class Yun_Db_Main {
 	    $this->initConf();
 	    $adapter = $this->main_conf->getAdapter($sql_prefix);
 	    if (false === $adapter) {
-	    	$this->error_code = $this->main_conf->errorCode();
-	    	$this->error_info = $this->main_conf->errorInfo();
+	    		$this->error_code = $this->main_conf->errorCode();
+	    		$this->error_info = $this->main_conf->errorInfo();
 	    }
 	    return $adapter;
 	}
@@ -448,7 +448,7 @@ class Yun_Db_Main {
 	    if (null === $this->main_conf) {
 	        $conf = Yun_Conf::getInstance()->get(self::CONF_KEY);
 	        if (!($conf instanceof Yun_Db_Conf_Interface)) {
-	            $errormsg = 'Yun_Conf::get("yun_db_conf")\'s value must be implement Yun_Db_Conf_Interface.';
+	            $error_msg = 'Yun_Conf::get("yun_db_conf")\'s value must be implement Yun_Db_Conf_Interface.';
 	            trigger_error($error_msg, E_USER_ERROR);
 	        }
 	        $this->main_conf = $conf;
