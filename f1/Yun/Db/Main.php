@@ -143,9 +143,10 @@ class Yun_Db_Main {
 		if (false === $re) {
 			$this->error_code = $adapter->errorCode();
 			$this->error_info = $adapter->errorInfo();
+        } else {
+            $re = is_array($re) && count($re) ? reset($re) : array();
         }
-        $re = reset($re);
-		return $re;
+        	return $re;
 	}
 
     /**

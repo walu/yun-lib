@@ -69,7 +69,7 @@ class Yun_Db_Postgre_Builder implements Yun_Db_Builder_Interface {
             }
             $sql_order = 'ORDER BY ' . rtrim($sql_order, ',');
         }
-        return "SELECT * FROM \"{$table}\" WHERE \"{$field}\"={$value} {$sql_order} LIMIT 1";
+        return "SELECT * FROM \"{$table}\" WHERE \"{$field}\"='{$value}' {$sql_order} LIMIT 1";
     }
     
     /**
