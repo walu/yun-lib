@@ -45,7 +45,7 @@ class Yun_Curl_Multi {
      */
     public function addUrl($url, array $curl_option_array=array()) {
         $ch = curl_init($url);
-        $curl_option_array[CURLOPT_RETURNTRANSFER] = true;
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         //注意，也会返回null，当url参数不对的时候
         if (false === $ch || null === $ch) {
             $this->setError("curl_init errors with url: {$url}");
