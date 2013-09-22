@@ -55,7 +55,7 @@ abstract class Yun_Db_Adapter_Pdo implements Yun_Db_Adapter_Interface {
 		
 		$re = $this->pdo->query($sql);
 	    if ($re instanceof PDOStatement) {
-	    		$re = $re->fetchAll(PDO::FETCH_ASSOC);
+	    	$re = $re->fetchAll(PDO::FETCH_ASSOC);
 	    } elseif (false === $re) {
 			$this->setPdoError();
 	    }

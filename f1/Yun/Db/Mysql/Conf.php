@@ -36,7 +36,7 @@
  */
 class Yun_Db_Mysql_Conf implements Yun_Db_Conf_Interface {
 
-	private $adapter_class_name = 'Yun_Db_Mysql_Adapter_Pdo';
+	private $adapter_class_name = 'Yun_Db_Mysql_Adapter_Mysqli';
 
 	private $adapter_instance = array();
 

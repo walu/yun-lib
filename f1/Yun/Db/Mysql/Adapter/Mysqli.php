@@ -4,7 +4,7 @@
  * 
  * @author walu<imcnan@gmail.com>
  */
-class Yun_Db_Mysql_Adapter_Mysqli implements Yun_Db_Mysql_Adapter_Interface {
+class Yun_Db_Mysql_Adapter_Mysqli implements Yun_Db_Adapter_Interface {
     
     /**
      * mysqli句柄
@@ -61,7 +61,7 @@ class Yun_Db_Mysql_Adapter_Mysqli implements Yun_Db_Mysql_Adapter_Interface {
      * @see Yun_Db_Adapter_Interface::query()
      */
     public function query($sql) {
-        $re = $this->mysqli->query($query);
+        $re = $this->mysqli->query($sql);
         $this->error_code = $this->mysqli->errno;
         $this->error_info = $this->mysqli->error;
         if ($re instanceof mysqli_result) {
@@ -92,7 +92,7 @@ class Yun_Db_Mysql_Adapter_Mysqli implements Yun_Db_Mysql_Adapter_Interface {
     /**
      * @see Yun_Db_Adapter_Interface::rollback()
      */
-    public function roolback() {
+    public function rollback() {
         return $this->query("ROLLBACK");
     }
     
