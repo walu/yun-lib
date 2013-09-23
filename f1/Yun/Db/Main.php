@@ -257,7 +257,7 @@ class Yun_Db_Main {
 	 * @param array $value
 	 * @return array
 	 */
-	public function selectByMuiltyValue($field, array $value) {
+	public function selectByMuiltyValue($field, array $value_array) {
         $builder = $this->getMainBuilder();
         
         $field = $this->quote($field);
