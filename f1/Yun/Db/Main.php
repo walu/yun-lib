@@ -86,6 +86,8 @@ class Yun_Db_Main {
 	
 	protected $error_info = '';
 	
+	protected $last_adapter;
+	
 	/**
 	 * 设置配置文件
 	 * 默认将使用Yun_Conf::getInstance()->get('yun_db_conf');
@@ -290,6 +292,15 @@ class Yun_Db_Main {
 	}
 	
 	/**
+	 * 返回lastinsertid，如果有的话
+	 * 
+	 * @return number
+	 */
+	public function lastInsertId() {
+		return $this->last_adapter->lastInsertId();
+	}
+	
+	/**
 	 * 向$this->main_table中同时插入多行
 	 * 
 	 * 如果$chunk_size==0,则整体一起插入，如果支持事务则使用事务。
@@ -438,6 +449,7 @@ class Yun_Db_Main {
 	    		$this->error_code = $this->main_conf->errorCode();
 	    		$this->error_info = $this->main_conf->errorInfo();
 	    }
+	    $this->last_adapter = $adapter;
 	    return $adapter;
 	}
 	
