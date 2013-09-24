@@ -258,6 +258,10 @@ class Yun_Db_Main {
 	 * @return array
 	 */
 	public function selectByMuiltyValue($field, array $value_array) {
+		if (empty($value_array)) {
+			return array();
+		}
+		
         $builder = $this->getMainBuilder();
         
         $field = $this->quote($field);

@@ -88,7 +88,7 @@ class Yun_Array {
 	 * @param string $key
 	 * @return array
 	 */
-	public function select(array $list, $key) {
+	public static function select(array $list, $key) {
 		$re = array();
 		foreach ($list as $row) {
 			if (array_key_exists($key, $row)) {
