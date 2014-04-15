@@ -4,7 +4,7 @@ function Yun_Loader($class_name) {
     $lastpos = strrpos($class_name, "_");
     $path = '';
     if (false !== $lastpos) {
-	$path = substr($class_name, 0, -(strrpos($class_name, '_')-1));
+	$path = substr($class_name, 0, $lastpos);
     	$path = '/' . str_replace('_', '/', $path);
     }
 
